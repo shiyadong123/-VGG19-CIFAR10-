@@ -1,3 +1,4 @@
+# 导入必要的库
 import torch
 from torch.optim import lr_scheduler
 import torch.nn as nn
@@ -8,9 +9,11 @@ import torchvision.datasets as dsets
 import torchvision.transforms as trans
 import time
 
-
+# 超参数
 BATCH_SIZE = 100
+# 损失函数
 loss_func = nn.CrossEntropyLoss()
+# 可以在CPU或者GPU上运行
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # CIFAR10的输入图片各channel的均值和标准差
@@ -34,7 +37,7 @@ if __name__ == '__main__':
     train_dl = DataLoader(train_set,
                           batch_size=BATCH_SIZE,
                           shuffle=True,
-                          num_workers=0)
+                          num_workers=0)     # 如需多线程，可以自行更改
     # train_set.train_data = train_set.train_data[0:n_train_samples]
     # train_set.train_labels = train_set.train_labels[0:n_train_samples]
 
@@ -49,13 +52,11 @@ if __name__ == '__main__':
 
     test_dl = DataLoader(test_set,
                          batch_size=BATCH_SIZE,
-                         num_workers=0)
+                         num_workers=0)      # 如需多线程，可以自行更改
 # train_set.train_data = train_set.train_data[:n_train_samples]
 # train_set.train_labels = train_set.train_labels[:n_train_samples]
 
 # 定义卷积层
-
-
 def conv3x3(in_features, out_features):
     return nn.Conv2d(in_features, out_features, kernel_size=3, padding=1)
 
@@ -156,7 +157,7 @@ class VGG(nn.Module):
         return out
 
 
-# 定义训练的辅助函数
+# 定义训练的辅助函数 包含error与accuracy
 def eval(model, loss_func, dataloader):
 
     model.eval()
@@ -192,7 +193,9 @@ def train_epoch(model, loss_func, optimizer, dataloader):
 
 nepochs = 50
 vgg19 = VGG().to(device)
+# 可以尝试打印出vgg19的网络结构
 # print(vgg19)
+
 optimizer = torch.optim.SGD(vgg19.parameters(), lr=0.01, momentum=0.9, nesterov=True)
 scheduler = lr_scheduler.MultiStepLR(optimizer, milestones=[40], gamma=0.1)
 learn_history = []
